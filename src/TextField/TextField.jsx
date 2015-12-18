@@ -5,12 +5,11 @@ import StylePropable from '../mixins/style-propable';
 import Transitions from '../styles/transitions';
 import UniqueId from '../utils/unique-id';
 import EnhancedTextarea from '../enhanced-textarea';
-import DefaultRawTheme from '../styles/raw-themes/light-raw-theme';
-import ThemeManager from '../styles/theme-manager';
 import ContextPure from '../mixins/context-pure';
 import TextFieldHint from './TextFieldHint';
 import TextFieldUnderline from './TextFieldUnderline';
 import warning from 'warning';
+import themeable from '../styles/themeable-decorator';
 
 /**
  * Check if a value is valid to be displayed inside an input.
@@ -28,10 +27,6 @@ const TextField = React.createClass({
     ContextPure,
     StylePropable,
   ],
-
-  contextTypes: {
-    muiTheme: React.PropTypes.object,
-  },
 
   propTypes: {
     children: React.PropTypes.node,
@@ -51,6 +46,7 @@ const TextField = React.createClass({
     hintText: React.PropTypes.node,
     id: React.PropTypes.string,
     inputStyle: React.PropTypes.object,
+    muiTheme: React.PropTypes.object.isRequired,
     multiLine: React.PropTypes.bool,
     onBlur: React.PropTypes.func,
     onChange: React.PropTypes.func,
@@ -71,17 +67,6 @@ const TextField = React.createClass({
     underlineShow: React.PropTypes.bool,
     underlineStyle: React.PropTypes.object,
     value: React.PropTypes.any,
-  },
-
-  //for passing default theme context to children
-  childContextTypes: {
-    muiTheme: React.PropTypes.object,
-  },
-
-  getChildContext() {
-    return {
-      muiTheme: this.state.muiTheme,
-    };
   },
 
   getDefaultProps() {
@@ -121,7 +106,6 @@ const TextField = React.createClass({
       errorText: this.props.errorText,
       hasValue: isValid(props.value) || isValid(props.defaultValue) ||
         (props.valueLink && isValid(props.valueLink.value)),
-      muiTheme: this.context.muiTheme ? this.context.muiTheme : ThemeManager.getMuiTheme(DefaultRawTheme),
     };
   },
 
@@ -129,9 +113,8 @@ const TextField = React.createClass({
     this._uniqueId = UniqueId.generate();
   },
 
-  componentWillReceiveProps(nextProps, nextContext) {
+  componentWillReceiveProps(nextProps) {
     let newState = {};
-    newState.muiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
 
     newState.errorText = nextProps.errorText;
     if (nextProps.children && nextProps.children.props) {
@@ -165,7 +148,7 @@ const TextField = React.createClass({
       backgroundColor,
       hintColor,
       errorColor,
-    } = this.constructor.getRelevantContextKeys(this.state.muiTheme);
+    } = this.constructor.getRelevantContextKeys(this.props.muiTheme);
 
     let styles = {
       root: {
@@ -176,7 +159,7 @@ const TextField = React.createClass({
         display: 'inline-block',
         position: 'relative',
         backgroundColor: backgroundColor,
-        fontFamily: this.state.muiTheme.rawTheme.fontFamily,
+        fontFamily: this.props.muiTheme.rawTheme.fontFamily,
         transition: Transitions.easeOut('200ms', 'height'),
       },
       error: {
@@ -345,7 +328,7 @@ const TextField = React.createClass({
         {floatingLabelTextElement}
         {hintText ?
           <TextFieldHint
-            muiTheme={this.state.muiTheme}
+            muiTheme={this.props.muiTheme}
             show={!(this.state.hasValue || (floatingLabelText && !this.state.isFocused))}
             style={hintStyle}
             text={hintText}
@@ -361,7 +344,7 @@ const TextField = React.createClass({
             errorStyle={errorStyle}
             focus={this.state.isFocused}
             focusStyle={underlineFocusStyle}
-            muiTheme={this.state.muiTheme}
+            muiTheme={this.props.muiTheme}
             style={underlineStyle}
           /> :
           null
@@ -462,4 +445,4 @@ const TextField = React.createClass({
 
 });
 
-export default TextField;
+export default themeable(TextField);
