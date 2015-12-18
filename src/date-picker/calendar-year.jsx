@@ -4,7 +4,7 @@ import StylePropable from '../mixins/style-propable';
 import Colors from '../styles/colors';
 import DateTime from '../utils/date-time';
 import YearButton from './year-button';
-
+import themeable from '../styles/themeable-decorator';
 
 const CalendarYear = React.createClass({
 
@@ -95,4 +95,4 @@ const CalendarYear = React.createClass({
 
 });
 
-export default CalendarYear;
+export default themeable(CalendarYear);

@@ -33,7 +33,8 @@ export default {
   // only call it when passing style attribute to html elements.
   // If you call it twice you'll get a warning anyway.
   prepareStyles() {
+    const muiTheme = this.props.muiTheme || (this.state && this.state.muiTheme) || this.context.muiTheme;
     return Styles.prepareStyles.apply(Styles,
-      [(this.state && this.state.muiTheme) || this.context.muiTheme].concat([].slice.apply(arguments)));
+      [muiTheme].concat([].slice.apply(arguments)));
   },
 };

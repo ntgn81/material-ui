@@ -1,5 +1,6 @@
 import React from 'react';
 import Paper from '../paper';
+import themeable from '../styles/themeable-decorator';
 
 const styles = {
   actions: {
@@ -67,4 +68,4 @@ const DatePickerInline = React.createClass({
 
 });
 
-export default DatePickerInline;
+export default themeable(DatePickerInline);
