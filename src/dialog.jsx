@@ -8,47 +8,24 @@ import FlatButton from './flat-button';
 import Overlay from './overlay';
 import RenderToLayer from './render-to-layer';
 import Paper from './paper';
-import DefaultRawTheme from './styles/raw-themes/light-raw-theme';
-import ThemeManager from './styles/theme-manager';
+import themeable from './styles/themeable-decorator';
 import warning from 'warning';
 
 import ReactTransitionGroup from 'react-addons-transition-group';
 
-const TransitionItem = React.createClass({
+const TransitionItem = themeable(React.createClass({
   mixins: [StylePropable],
 
   propTypes: {
     children: React.PropTypes.node,
+    muiTheme: React.PropTypes.object.isRequired,
     style: React.PropTypes.object,
-  },
-
-  contextTypes: {
-    muiTheme: React.PropTypes.object,
-  },
-
-  //for passing default theme context to children
-  childContextTypes: {
-    muiTheme: React.PropTypes.object,
-  },
-
-  getChildContext() {
-    return {
-      muiTheme: this.state.muiTheme,
-    };
   },
 
   getInitialState() {
     return {
       style: {},
-      muiTheme: this.context.muiTheme ? this.context.muiTheme : ThemeManager.getMuiTheme(DefaultRawTheme),
     };
-  },
-
-  //to update theme inside state whenever a new theme is passed down
-  //from the parent / owner using context
-  componentWillReceiveProps(nextProps, nextContext) {
-    const newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
-    this.setState({muiTheme: newMuiTheme});
   },
 
   componentWillEnter(callback) {
@@ -56,7 +33,7 @@ const TransitionItem = React.createClass({
   },
 
   componentWillAppear(callback) {
-    const spacing = this.state.muiTheme.rawTheme.spacing;
+    const spacing = this.props.muiTheme.rawTheme.spacing;
 
     this.setState({
       style: {
@@ -94,26 +71,11 @@ const TransitionItem = React.createClass({
       </div>
     );
   },
-});
+}));
 
-const DialogInline = React.createClass({
+const DialogInline = themeable(React.createClass({
 
   mixins: [WindowListenable, StylePropable],
-
-  contextTypes: {
-    muiTheme: React.PropTypes.object,
-  },
-
-  //for passing default theme context to children
-  childContextTypes: {
-    muiTheme: React.PropTypes.object,
-  },
-
-  getChildContext() {
-    return {
-      muiTheme: this.state.muiTheme,
-    };
-  },
 
   propTypes: {
     actionFocus: React.PropTypes.string,
@@ -129,6 +91,7 @@ const DialogInline = React.createClass({
     contentClassName: React.PropTypes.string,
     contentStyle: React.PropTypes.object,
     modal: React.PropTypes.bool,
+    muiTheme: React.PropTypes.object.isRequired,
     onRequestClose: React.PropTypes.func,
     open: React.PropTypes.bool.isRequired,
     overlayClassName: React.PropTypes.string,
@@ -146,17 +109,6 @@ const DialogInline = React.createClass({
     resize: '_handleResize',
   },
 
-  getInitialState() {
-    return {
-      muiTheme: this.context.muiTheme ? this.context.muiTheme : ThemeManager.getMuiTheme(DefaultRawTheme),
-    };
-  },
-
-  componentWillReceiveProps(nextProps, nextContext) {
-    const newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
-    this.setState({muiTheme: newMuiTheme});
-  },
-
   componentDidMount() {
     this._positionDialog();
   },
@@ -172,7 +124,7 @@ const DialogInline = React.createClass({
       width,
     } = this.props;
 
-    const muiTheme = this.state.muiTheme;
+    const muiTheme = this.props.muiTheme;
     const rawTheme = muiTheme.rawTheme;
     const spacing = rawTheme.spacing;
     const gutter = spacing.desktopGutter;
@@ -455,9 +407,9 @@ const DialogInline = React.createClass({
     }
   },
 
-});
+}));
 
-const Dialog = React.createClass({
+const Dialog = themeable(React.createClass({
 
   propTypes: {
     /**
@@ -607,6 +559,6 @@ const Dialog = React.createClass({
     );
   },
 
-});
+}));
 
 export default Dialog;

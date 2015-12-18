@@ -2,7 +2,7 @@ import React from 'react';
 import DateTime from '../utils/date-time';
 import DayButton from './day-button';
 import ClearFix from '../clearfix';
-
+import themeable from '../styles/themeable-decorator';
 
 const CalendarMonth = React.createClass({
 
@@ -14,6 +14,10 @@ const CalendarMonth = React.createClass({
     onDayTouchTap: React.PropTypes.func,
     selectedDate: React.PropTypes.object.isRequired,
     shouldDisableDate: React.PropTypes.func,
+  },
+
+  statics: {
+    publicMethods: ['isSelectedDateDisabled'],
   },
 
   render() {
@@ -86,4 +90,4 @@ const CalendarMonth = React.createClass({
 
 });
 
-export default CalendarMonth;
+export default themeable(CalendarMonth);

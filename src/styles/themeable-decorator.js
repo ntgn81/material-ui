@@ -1,5 +1,5 @@
 import React from 'react';
-import DefaultRawTheme from '../styles/raw-themes/dark-raw-theme';
+import DefaultRawTheme from '../styles/raw-themes/light-raw-theme';
 import ThemeManager from '../styles/theme-manager';
 
 // Putting this out here for cache-ability
@@ -8,9 +8,16 @@ function getDefaultTheme() {
   return defaultTheme || (defaultTheme = ThemeManager.getMuiTheme(DefaultRawTheme));
 }
 
-export default function(Component) {
+function getDisplayName(WrappedComponent) {
+  const originalName = WrappedComponent.displayName || WrappedComponent.name || 'Component';
+  return `Themed_${originalName}`;
+}
+
+export default function(WrappedComponent) {
   const ref = 'childComponent';
   const config = {
+    displayName: getDisplayName(WrappedComponent),
+
     contextTypes: {
       muiTheme: React.PropTypes.object,
     },
@@ -20,21 +27,27 @@ export default function(Component) {
     },
 
     getChildContext() {
-      return this.context;
+      return {
+        muiTheme: this._getMuiTheme(),
+      };
     },
 
     render() {
-      const muiTheme = this.context.muiTheme || getDefaultTheme();
-      return React.createElement(Component, {...this.props, muiTheme, ref} );
+      const muiTheme = this._getMuiTheme();
+      return React.createElement(WrappedComponent, {...this.props, muiTheme, ref} );
+    },
+
+    _getMuiTheme() {
+      return this.props.muiTheme || this.context.muiTheme || getDefaultTheme();
     },
   };
 
   // Create a proxy for each of the public methods
   // the component provides in it's statics.publicMethods
-  if (Array.isArray(Component.publicMethods)) {
-    Component.publicMethods.forEach(methodName => {
+  if (Array.isArray(WrappedComponent.publicMethods)) {
+    WrappedComponent.publicMethods.forEach(methodName => {
       config[methodName] = function() {
-        this.refs[ref][methodName]();
+        return this.refs[ref][methodName]();
       };
     });
   }
